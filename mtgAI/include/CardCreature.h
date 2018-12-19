@@ -3,6 +3,8 @@
 #ifndef _H_CARDCREATURE
 #define _H_CARDCREATURE
 
+#include <memory>
+
 #include "Card.h"
 #include "Mana.h"
 
@@ -18,6 +20,8 @@ namespace MTG {
 
 			void setPower (unsigned char power) override;
 			void setToughness (unsigned char toughness) override;
+
+      std::unique_ptr<unsigned char[]> vectorize () const override;
 
 		protected:
 			unsigned char m_Power;

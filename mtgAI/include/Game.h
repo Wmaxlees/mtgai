@@ -2,17 +2,21 @@
 #ifndef _H_GAME
 #define _H_GAME
 
+#include <vector>
+
+#include "Matrix.h"
 #include "Player.h"
 
 namespace MTG {
 
 	class Game {
 		public:
-			Game (unsigned char playerCount, std::vector<Library*> decks);
-			Game (unsigned char playerCount, std::vector<Library*> decks, bool verbose);
+			Game (unsigned char playerCount, Library* decks[]);
+			Game (unsigned char playerCount, Library* decks[], bool verbose);
 			~Game ();
 
-			void initialize ();
+      void step ();
+		  Matrix<unsigned char>* reset ();
 
 			static const unsigned char PHASE_BEGINNING = 0;
 			static const unsigned char PHASE_UNTAP = 1;
@@ -36,11 +40,14 @@ namespace MTG {
 			unsigned char m_Phase;
 
 			Player* m_Players[6];
+      Library* m_Decks[6];
 			bool m_Verbose;
 
 			void drawOpeningCards ();
 
 			void nextPlayer ();
+
+      Matrix<unsigned char>* vectorize () const;
 
 
 		private:
@@ -51,4 +58,3 @@ namespace MTG {
 }
 
 #endif //_H_GAME
-

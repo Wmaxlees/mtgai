@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "pch.h"
 #include "Board.h"
 
@@ -18,6 +20,14 @@ namespace MTG {
 	void Board::addCard (CardInstance* card) {
 		this->m_Cards.push_back(card);
 	}
+
+  void Board::untapAll () {
+    for (CardInstance* card : this->m_Cards) {
+      if (card->isTapped()) {
+        card->untap();
+      }
+    }
+  }
 
 
 	std::vector<const CardInstance*> Board::getCardsOfType(unsigned int type, bool onlyUntapped) const {
@@ -40,5 +50,19 @@ namespace MTG {
 	std::vector<const CardInstance*> Board::getCardsOfType(unsigned int type) const {
 		return this->getCardsOfType(type, false);
 	}
+
+
+  Matrix<unsigned char>* Board::vectorize () const {
+    std::cout << "Vectorizing Board..." << std::endl;
+    Matrix<unsigned char>* result = new Matrix<unsigned char>();
+
+    for (CardInstance* card : this->m_Cards) {
+      unsigned char* cardVector = card->vectorize(true);
+      result->put(cardVector, 12);
+      delete [] cardVector;
+    }
+
+    return result;
+  }
 
 }

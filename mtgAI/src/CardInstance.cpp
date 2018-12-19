@@ -24,10 +24,6 @@ namespace MTG {
 		return stream;
 	}
 
-	bool CardInstance::isOnBoard () const {
-		return this->m_OnBoard;
-	}
-
 	bool CardInstance::isTapped () const {
 		return this->m_Tapped;
 	}
@@ -39,5 +35,24 @@ namespace MTG {
 	const ManaCost& CardInstance::getCost () const {
 		return *this->m_BaseCard->getCost();
 	}
+
+  void CardInstance::untap () {
+    this->m_Tapped = false;
+  }
+
+  std::unique_ptr<unsigned char[]> CardInstance::vectorize (bool onBoard) const {
+    // 0-9 base card info
+    // 10 tapped
+    // 11 on board
+    std::unique_ptr<unsigned char[]> result = std::make_unique<unsigned char[]>(12);
+
+    std::unique_ptr<unsigned char[]> baseCard = this->m_BaseCard->vectorize();
+    std::copy(&(baseCard[0]), &(baseCard[12]), &(result[0]));
+
+    result[10] = this->m_Tapped ? 0 : 1;
+    result[11] = onBoard ? 0 : 1;
+
+    return result;
+  }
 
 }

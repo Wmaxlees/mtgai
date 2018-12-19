@@ -2,10 +2,12 @@
 #ifndef _H_CARD
 #define _H_CARD
 
+#include <memory>
 #include <vector>
 
 #include "Mana.h"
 #include "ManaCost.h"
+#include "Matrix.h"
 
 
 namespace MTG {
@@ -20,27 +22,29 @@ namespace MTG {
 			static const unsigned char INSTANT = 32;
 			static const unsigned char SORCERY = 64;
 
-			static Card* cardFromFile (std::string filename);
+			static std::shared_ptr<Card> cardFromFile (std::string filename);
 			Card ();
-			~Card ();
+			virtual ~Card ();
 
 			bool isType (unsigned char type) const;
 
-			const ManaCost* const getCost () const;
+			const std::unique_ptr<const ManaCost> getCost () const;
 			std::string getName () const;
-			virtual bool isAffordable (const Mana& mana) const = 0; 
+			virtual bool isAffordable (const Mana& mana) const = 0;
 
 			void setName (std::string name);
 			void setCost (std::string manaCostString);
 			virtual void setPower (unsigned char power) = 0;
 			virtual void setToughness (unsigned char toughness) = 0;
 
+      virtual std::unique_ptr<unsigned char[]> vectorize () const = 0;
+
 			friend std::ostream& operator<< (std::ostream& stream, const Card& card);
 
 		protected:
 			unsigned char m_Type;
 			std::string m_Name;
-			ManaCost* m_Cost;
+			std::unique_ptr<ManaCost> m_Cost;
 
 		private:
 
@@ -53,5 +57,3 @@ namespace MTG {
 
 
 #endif //_H_CARD
-
-

@@ -12,6 +12,8 @@ namespace MTG {
 			void setPower(unsigned char power) override;
 			void setToughness(unsigned char toughness) override;
 
+      std::unique_ptr<unsigned char[]> vectorize () const override;
+
 		protected:
 			unsigned char m_LandColorless;
 			unsigned char m_LandB;
@@ -21,4 +23,3 @@ namespace MTG {
 			unsigned char m_LandW;
 	};
 }
-

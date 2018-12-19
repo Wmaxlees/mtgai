@@ -39,4 +39,17 @@ namespace MTG {
 
 		return value;
 	}
+
+  std::unique_ptr<unsigned char[]> ManaCost::vectorize () const {
+    std::unique_ptr<unsigned char[]> result = std::make_unique<unsigned char[]>(7);
+    result[0] = this->m_B;
+    result[1] = this->m_G;
+    result[2] = this->m_R;
+    result[3] = this->m_U;
+    result[4] = this->m_W;
+    result[5] = this->m_Colorless;
+    result[6] = this->m_Xs;
+
+    return result;
+  }
 }

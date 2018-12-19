@@ -13,6 +13,7 @@ namespace MTG {
 
 
 	Player::~Player () {
+    std::cout << "Destroying player object." << std::endl;
 		if (this->m_Library) {
 			delete this->m_Library;
 		}
@@ -32,6 +33,10 @@ namespace MTG {
 		return true;
 	}
 
+  void Player::untapAll () {
+    this->m_Board.untapAll();
+  }
+
 	void Player::printHand () const {
 		std::cout << this->m_Hand;
 	}
@@ -49,21 +54,38 @@ namespace MTG {
 
 	std::vector<const CardInstance*> Player::getInstantSpeedMoves () const {
 		std::vector<const CardInstance*> moves;
-		
+
 		return moves;
 	}
+
 
 	std::vector<const CardInstance*> Player::getMainPhaseMoves () const {
 		return this->m_Hand.getPlayableCards(this->m_Mana);
 	}
 
+
 	std::vector<const CardInstance*> Player::getPossibleAttackers () const {
 		return this->m_Board.getCardsOfType(Card::CREATURE, true);
 	}
 
-	
+
 	std::vector<const CardInstance*> Player::getPossibleBlockers () const {
 		return this->m_Board.getCardsOfType(Card::CREATURE, true);
 	}
+
+
+  Matrix<unsigned char>* Player::vectorize () const {
+    std::cout << "Vectorizing Player..." << std::endl;
+
+    Matrix<unsigned char>* result = this->m_Board.vectorize();
+    Matrix<unsigned char>* hand = this->m_Hand.vectorize();
+    std::cout << "Combining board and hand." << std::endl;
+    result->append(const_cast<const Matrix<unsigned char>* const>(hand));
+    std::cout << "Finished combining board and hand." << std::endl;
+    delete hand;
+    std::cout << "TEST" << std::endl;
+
+    return result;
+  }
 
 }

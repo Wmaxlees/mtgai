@@ -8,14 +8,17 @@
 #include "Library.h"
 #include "DebugLibrary.h"
 
-#include <vector>
+#include <iostream>
+#include <memory>
 
 int main (int argc, char** argv) {
+  std::cout << "Starting card manager..." << std::endl;
 	MTG::CardManager cardManager;
-	MTG::Card* land = cardManager.addCardFromFile("land.txt");
-	MTG::Card* forest = cardManager.addCardFromFile("forest.txt");
-	MTG::Card* mammoth = cardManager.addCardFromFile("creature.txt");
+	std::shared_ptr<MTG::Card> land = cardManager.addCardFromFile("land.txt");
+	std::shared_ptr<MTG::Card> forest = cardManager.addCardFromFile("forest.txt");
+	std::shared_ptr<MTG::Card> mammoth = cardManager.addCardFromFile("creature.txt");
 
+  std::cout << "Generating decks..." << std::endl;
 	MTG::DebugLibrary* deckA = new MTG::DebugLibrary();
 	MTG::DebugLibrary* deckB = new MTG::DebugLibrary();
 
@@ -27,12 +30,11 @@ int main (int argc, char** argv) {
 	deckB->addCard(forest);
 	deckB->addCard(mammoth);
 
-	std::vector<MTG::Library*> decks(2);
+  MTG::Library* decks[2];
 	decks[0] = deckA;
 	decks[1] = deckB;
 
 	MTG::Game game(2, decks, true);
 
-	game.initialize();
+	game.reset();
 }
-

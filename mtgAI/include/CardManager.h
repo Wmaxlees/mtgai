@@ -15,10 +15,10 @@ namespace MTG {
 			CardManager ();
 			~CardManager ();
 
-			Card* addCardFromFile (std::string filename);
+			std::shared_ptr<Card> addCardFromFile (std::string filename);
 
 		protected:
-			std::map<std::string, Card*> m_Cards;
+			std::map<std::string, std::shared_ptr<Card>> m_Cards;
 	};
 
 }

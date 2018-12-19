@@ -9,6 +9,7 @@
 #include "ManaCost.h"
 #include "Board.h"
 #include "Mana.h"
+#include "Matrix.h"
 
 
 namespace MTG {
@@ -18,6 +19,7 @@ namespace MTG {
 		~Player ();
 
 		bool drawCards (unsigned char amount);
+    void untapAll ();
 
 		void printHand () const;
 
@@ -29,6 +31,8 @@ namespace MTG {
 		void playCard (const CardInstance*);
 
 		void clearMana ();
+
+    Matrix<unsigned char>* vectorize () const;
 
 	protected:
 		unsigned char m_Health;
@@ -46,4 +50,3 @@ namespace MTG {
 
 
 #endif //_H_PLAYER
-

@@ -7,8 +7,8 @@
 #include <fstream>
 
 namespace MTG {
-	Card* Card::cardFromFile(std::string filename) {
-		Card* result = nullptr;
+	std::shared_ptr<Card> Card::cardFromFile(std::string filename) {
+		std::shared_ptr<Card> result = std::make_shared<Card>();
 
 		std::ifstream cardFile(filename.c_str());
 
@@ -19,7 +19,7 @@ namespace MTG {
 		int intValue = std::stoi(line);
 		switch (intValue) {
 			case Card::ARTIFACT:
-				
+
 				break;
 			case Card::CREATURE:
 				result = new CardCreature();

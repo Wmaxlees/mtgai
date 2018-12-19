@@ -1,1 +1,4 @@
 debug/
+build/
+*.so
+mtgai

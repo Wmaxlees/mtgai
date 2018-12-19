@@ -9,8 +9,8 @@
 
 namespace MTG {
 	namespace vectorize {
-		std::vector<float> card (CardInstance* card);
-		std::vector<float> game (Game game);
+		std::vector<float> card (const CardInstance* const card);
+		std::vector<float> game (const Game* const game);
 	}
 }
 

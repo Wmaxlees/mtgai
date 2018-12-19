@@ -3,7 +3,7 @@
 
 namespace MTG {
 	namespace vectorize {
-		std::vector<float> card (CardInstance* card) {
+		std::vector<float> card (const CardInstance* const card) {
 			std::vector<float> result(20);
 
 			if (card->isType(Card::ARTIFACT)) {
@@ -38,7 +38,7 @@ namespace MTG {
 		}
 
 
-		std::vector<float> game (Game game) {
+		std::vector<float> game (const Game* const game) {
 			std::vector<float> result;
 
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "Library.h"
 
+#include <memory>
 #include <vector>
 
 namespace MTG {
@@ -10,14 +11,14 @@ namespace MTG {
 			DebugLibrary ();
 			~DebugLibrary ();
 
-			void addCard (Card* card);
+			void addCard (std::shared_ptr<Card> card);
 
 			bool empty() const override;
 			void shuffle() override;
-			CardInstance* getNextCard() override;
+			std::shared_ptr<CardInstance> getNextCard() override;
 
 		protected:
-			std::vector<Card*> m_Cards;
+			std::vector<std::shared_ptr<Card>> m_Cards;
 	};
 
 }
