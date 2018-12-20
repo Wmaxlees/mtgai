@@ -5,7 +5,7 @@
 
 #include <vector>
 
-#include "CardInstance.h"
+#include "Card/Instance.h"
 #include "Matrix.h"
 
 namespace MTG {
@@ -14,16 +14,16 @@ namespace MTG {
 			Board ();
 			~Board ();
 
-			void addCard (CardInstance* card);
+			void addCard (std::shared_ptr<Card::Instance> card);
       void untapAll ();
 
-			std::vector<const CardInstance*> getCardsOfType(unsigned int type) const;
-			std::vector<const CardInstance*> getCardsOfType(unsigned int type, bool onlyUntapped) const;
+			std::vector<std::shared_ptr<const Card::Instance>> getCardsOfType(unsigned int type) const;
+			std::vector<std::shared_ptr<const Card::Instance>> getCardsOfType(unsigned int type, bool onlyUntapped) const;
 
-      Matrix<unsigned char>* vectorize () const;
+      std::unique_ptr<Matrix<unsigned char, 12>> vectorize () const;
 
 		protected:
-			std::vector<CardInstance*> m_Cards;
+			std::vector<std::shared_ptr<Card::Instance>> m_Cards;
 	};
 
 }

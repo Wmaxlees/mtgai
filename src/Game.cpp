@@ -1,15 +1,13 @@
-#include "pch.h"
+
 #include "Game.h"
 
 #include <iostream>
 
-#include "vectorize.h"
-
 namespace MTG {
-	Game::Game (unsigned char playerCount, Library* decks[]) : Game(playerCount, decks, false) {}
+	Game::Game (unsigned char playerCount, std::array<std::shared_ptr<Deck::DeckBase>, 6> decks) : Game(playerCount, decks, false) {}
 
   // TODO: Make a DeckInstance class
-	Game::Game (unsigned char playerCount, Library* decks[], bool verbose) {
+	Game::Game (unsigned char playerCount, std::array<std::shared_ptr<Deck::DeckBase>, 6> decks, bool verbose) {
 		this->m_PlayerCount = playerCount;
 		this->m_CurrentPlayer = 0;
 		this->m_PriorityPlayer = 0;
@@ -28,15 +26,6 @@ namespace MTG {
 
 	Game::~Game () {
     std::cout << "Destroying Game object." << std::endl;
-		for (unsigned char i = 0; i < 6; ++i) {
-			delete this->m_Players[i];
-			this->m_Players[i] = nullptr;
-
-      // TODO: Make DeckInstance!!!
-      // delete this->m_Decks[i];
-			// this->m_Decks[i] = nullptr;
-		}
-
 	}
 
 
@@ -58,17 +47,11 @@ namespace MTG {
   }
 
 
-  Matrix<unsigned char>* Game::reset () {
+  std::unique_ptr<Matrix<unsigned char, 12>> Game::reset () {
     std::cout << "Resetting..." << std::endl;
-    for (unsigned char i = 0; i < 6; ++i) {
-      if (this->m_Players[i]) {
-        delete this->m_Players[i];
-      }
-			this->m_Players[i] = nullptr;
-		}
-
     for (unsigned char i = 0; i < this->m_PlayerCount; ++i) {
-			this->m_Players[i] = new Player(20, this->m_Decks[i]);
+      std::unique_ptr<Deck::Instance> deck = this->m_Decks[i]->newInstance();
+			this->m_Players[i] = std::make_unique<Player>(20, move(deck));
 		}
 
     std::cout << "Drawing opening hands..." << std::endl;
@@ -78,13 +61,16 @@ namespace MTG {
 		this->m_CurrentPlayer = 0;
 		this->m_Phase = Game::PHASE_BEGINNING;
 
-    return this->vectorize();
+    std::unique_ptr<Matrix<unsigned char, 12>> result = this->vectorize();
+
+    return result;
 	}
 
 
 
   void Game::drawOpeningCards () {
 		for (unsigned char i = 0; i < this->m_PlayerCount; ++i) {
+      this->m_Players[i]->shuffle();
 			this->m_Players[i]->drawCards(7);
 			if (this->m_Verbose) {
 				std::cout << "Player " << i + 1 << " Starting Hand:" << std::endl;
@@ -99,12 +85,18 @@ namespace MTG {
 		this->m_CurrentPlayer = (this->m_CurrentPlayer + 1) % this->m_PlayerCount;
 	}
 
-  Matrix<unsigned char>* Game::vectorize () const {
+  std::unique_ptr<Matrix<unsigned char, 12>> Game::vectorize () const {
     std::cout << "Vectorizing Game..." << std::endl;
-    Matrix<unsigned char>* result = this->m_Players[this->m_CurrentPlayer]->vectorize();
+    std::unique_ptr<Matrix<unsigned char, 12>> result = this->m_Players[this->m_CurrentPlayer]->vectorize();
 
-    std::cout << "Finished vectorizing current player." << std::endl;
-
+    std::size_t player = this->m_CurrentPlayer;
+    player = (player + 1) % this->m_PlayerCount;
+    while (player != this->m_CurrentPlayer) {
+      std::unique_ptr<Matrix<unsigned char, 12>> playerVec = this->m_Players[player]->vectorize();
+      result->append(playerVec);
+      player = (player + 1) % this->m_PlayerCount;
+    }
+    
     return result;
   }
 

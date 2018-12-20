@@ -1,40 +1,40 @@
 // mtgAI.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "pch.h"
-
-#include "CardManager.h"
-#include "Game.h"
-#include "Library.h"
-#include "DebugLibrary.h"
-
+#include <array>
 #include <iostream>
 #include <memory>
+#include <ctime>
+
+#include "Card/Manager.h"
+#include "Game.h"
+#include "Deck/DeckBase.h"
+#include "Deck/DebugDeck.h"
 
 int main (int argc, char** argv) {
+  std::srand ( unsigned ( std::time(0) ) );
+
   std::cout << "Starting card manager..." << std::endl;
-	MTG::CardManager cardManager;
-	std::shared_ptr<MTG::Card> land = cardManager.addCardFromFile("land.txt");
-	std::shared_ptr<MTG::Card> forest = cardManager.addCardFromFile("forest.txt");
-	std::shared_ptr<MTG::Card> mammoth = cardManager.addCardFromFile("creature.txt");
+	MTG::Card::Manager cardManager;
+  std::cout << "Loading land." << std::endl;
+	std::shared_ptr<MTG::Card::CardBase> land = cardManager.addCardFromFile("land.txt");
+  std::cout << "Loading forest." << std::endl;
+	std::shared_ptr<MTG::Card::CardBase> forest = cardManager.addCardFromFile("forest.txt");
+  std::cout << "Loading creature." << std::endl;
+	std::shared_ptr<MTG::Card::CardBase> mammoth = cardManager.addCardFromFile("creature.txt");
 
-  std::cout << "Generating decks..." << std::endl;
-	MTG::DebugLibrary* deckA = new MTG::DebugLibrary();
-	MTG::DebugLibrary* deckB = new MTG::DebugLibrary();
+  std::cout << "Generating deck..." << std::endl;
+	std::shared_ptr<MTG::Deck::DebugDeck> deck = std::make_shared<MTG::Deck::DebugDeck>();
+	deck->addCard(land);
+	deck->addCard(forest);
+	deck->addCard(mammoth);
 
-	deckA->addCard(land);
-	deckA->addCard(forest);
-	deckA->addCard(mammoth);
-
-	deckB->addCard(land);
-	deckB->addCard(forest);
-	deckB->addCard(mammoth);
-
-  MTG::Library* decks[2];
-	decks[0] = deckA;
-	decks[1] = deckB;
+  std::array<std::shared_ptr<MTG::Deck::DeckBase>, 6> decks;
+	decks[0] = deck;
+	decks[1] = deck;
 
 	MTG::Game game(2, decks, true);
 
-	game.reset();
+	std::unique_ptr<Matrix<unsigned char, 12>> result = game.reset();
+  std::cout << *result << std::endl;
 }

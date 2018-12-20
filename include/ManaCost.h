@@ -3,6 +3,7 @@
 #ifndef _H_MANACOST
 #define _H_MANACOST
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -13,10 +14,11 @@ namespace MTG {
 	class ManaCost
 	{
 		public:
+      ManaCost ();
 			ManaCost (std::string manaCostString);
 			~ManaCost ();
 
-      std::unique_ptr<unsigned char[]> vectorize () const;
+      std::array<unsigned char, 7> vectorize () const;
 
 			friend class Mana;
 

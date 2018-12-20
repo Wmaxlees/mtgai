@@ -2,7 +2,7 @@
 # @Date:   2018-12-18T10:49:36-07:00
 # @Email:  william.lees@nist.gov
 # @Last modified by:   W. Max Lees
-# @Last modified time: 2018-12-18T16:53:42-07:00
+# @Last modified time: 2018-12-19T15:55:46-07:00
 
 CC = clang
 CFLAGS = -Wc++11-extensions -std=c++1z -fpic
@@ -26,6 +26,8 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	@echo "Compiling $<..."; $(CC) $(CFLAGS) $(INC) -c -o $@ $<
 
 test: $(OUT_LIB)
+	LD_LIBRARY_PATH=.
+	export LD_LIBRARY_PATH
 	$(CC) $(CFLAGS) $(INC) $(SRCDIR)/mtgAI.cpp -o mtgai -L. -lmtg -lstdc++
 
 clean:

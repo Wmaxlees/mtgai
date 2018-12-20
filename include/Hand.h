@@ -2,7 +2,7 @@
 #ifndef _H_HAND
 #define _H_HAND
 
-#include "CardInstance.h"
+#include "Card/Instance.h"
 #include "Mana.h"
 #include "Matrix.h"
 
@@ -15,18 +15,18 @@ namespace MTG {
 			Hand ();
 			~Hand ();
 
-			void addCard (std::shared_ptr<CardInstance> card);
-			void removeCard (std::shared_ptr<CardInstance> card);
+			void addCard (std::shared_ptr<Card::Instance> card);
+			std::shared_ptr<Card::Instance> removeCard (std::shared_ptr<const Card::Instance> card);
 
-			std::vector<std::shared_ptr<CardInstance>> getPlayableCards(const Mana mana) const;
+			std::vector<std::shared_ptr<const Card::Instance>> getPlayableCards(const Mana mana) const;
 
-      std::unique_ptr<Matrix<unsigned char>> vectorize () const;
+      std::unique_ptr<Matrix<unsigned char, 12>> vectorize () const;
 
 			friend std::ostream& operator<< (std::ostream& stream, const Hand& hand);
 
 		protected:
 			unsigned char m_MaxSize;
-			std::vector<std::shared_ptr<CardInstance>> m_Cards;
+			std::vector<std::shared_ptr<Card::Instance>> m_Cards;
 
 		private:
 

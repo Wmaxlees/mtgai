@@ -11,12 +11,12 @@ namespace MTG {
 
 	class Game {
 		public:
-			Game (unsigned char playerCount, Library* decks[]);
-			Game (unsigned char playerCount, Library* decks[], bool verbose);
+			Game (unsigned char playerCount, std::array<std::shared_ptr<Deck::DeckBase>, 6> decks);
+			Game (unsigned char playerCount, std::array<std::shared_ptr<Deck::DeckBase>, 6> decks, bool verbose);
 			~Game ();
 
       void step ();
-		  Matrix<unsigned char>* reset ();
+		  std::unique_ptr<Matrix<unsigned char, 12>> reset ();
 
 			static const unsigned char PHASE_BEGINNING = 0;
 			static const unsigned char PHASE_UNTAP = 1;
@@ -39,15 +39,15 @@ namespace MTG {
 
 			unsigned char m_Phase;
 
-			Player* m_Players[6];
-      Library* m_Decks[6];
+      std::array<std::unique_ptr<Player>, 6> m_Players;
+      std::array<std::shared_ptr<Deck::DeckBase>, 6> m_Decks;
 			bool m_Verbose;
 
 			void drawOpeningCards ();
 
 			void nextPlayer ();
 
-      Matrix<unsigned char>* vectorize () const;
+      std::unique_ptr<Matrix<unsigned char, 12>> vectorize () const;
 
 
 		private:

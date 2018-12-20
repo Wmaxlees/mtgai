@@ -1,4 +1,5 @@
-#include "pch.h"
+#include <iostream>
+
 #include "ManaCost.h"
 
 
@@ -6,19 +7,38 @@ namespace MTG {
 
 	int getNextValue (std::string& manaCostString);
 
+  ManaCost::ManaCost () {}
+
 	ManaCost::ManaCost (std::string manaCostString) {
 		std::string delimiter = ";";
 
 		size_t pos = 0;
 		std::string token;
 
-		this->m_B = getNextValue(manaCostString);
-		this->m_G = getNextValue(manaCostString);
-		this->m_R = getNextValue(manaCostString);
-		this->m_U = getNextValue(manaCostString);
-		this->m_W = getNextValue(manaCostString);
-		this->m_Colorless = getNextValue(manaCostString);
-		this->m_Xs = getNextValue(manaCostString);
+    int value = 0;
+
+    value =  getNextValue(manaCostString);
+		this->m_B = value;
+
+    value =  getNextValue(manaCostString);
+		this->m_G = value;
+
+    value =  getNextValue(manaCostString);
+		this->m_R = value;
+
+    value =  getNextValue(manaCostString);
+		this->m_U = value;
+
+    value =  getNextValue(manaCostString);
+		this->m_W = value;
+
+    value =  getNextValue(manaCostString);
+		this->m_Colorless = value;
+
+    value =  getNextValue(manaCostString);
+		this->m_Xs = value;
+
+
 	}
 
 
@@ -40,15 +60,16 @@ namespace MTG {
 		return value;
 	}
 
-  std::unique_ptr<unsigned char[]> ManaCost::vectorize () const {
-    std::unique_ptr<unsigned char[]> result = std::make_unique<unsigned char[]>(7);
-    result[0] = this->m_B;
-    result[1] = this->m_G;
-    result[2] = this->m_R;
-    result[3] = this->m_U;
-    result[4] = this->m_W;
-    result[5] = this->m_Colorless;
-    result[6] = this->m_Xs;
+  std::array<unsigned char, 7> ManaCost::vectorize () const {
+    std::array<unsigned char, 7> result{
+      this->m_B,
+      this->m_G,
+      this->m_R,
+      this->m_U,
+      this->m_W,
+      this->m_Colorless,
+      this->m_Xs
+    };
 
     return result;
   }

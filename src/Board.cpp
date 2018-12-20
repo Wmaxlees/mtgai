@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include "pch.h"
 #include "Board.h"
 
 namespace MTG {
@@ -10,19 +9,15 @@ namespace MTG {
 
 
 	Board::~Board () {
-		for (CardInstance* card : this->m_Cards) {
-			delete card;
-			card = nullptr;
-		}
 	}
 
 
-	void Board::addCard (CardInstance* card) {
+	void Board::addCard (std::shared_ptr<Card::Instance> card) {
 		this->m_Cards.push_back(card);
 	}
 
   void Board::untapAll () {
-    for (CardInstance* card : this->m_Cards) {
+    for (std::shared_ptr<Card::Instance> card : this->m_Cards) {
       if (card->isTapped()) {
         card->untap();
       }
@@ -30,10 +25,10 @@ namespace MTG {
   }
 
 
-	std::vector<const CardInstance*> Board::getCardsOfType(unsigned int type, bool onlyUntapped) const {
-		std::vector<const CardInstance*> result;
+	std::vector<std::shared_ptr<const Card::Instance>> Board::getCardsOfType(unsigned int type, bool onlyUntapped) const {
+		std::vector<std::shared_ptr<const Card::Instance>> result;
 
-		for (CardInstance* card : this->m_Cards) {
+		for (std::shared_ptr<const Card::Instance> card : this->m_Cards) {
 			if (card->isType(type)) {
 				if (onlyUntapped && card->isTapped()) {
 					continue;
@@ -47,22 +42,22 @@ namespace MTG {
 	}
 
 
-	std::vector<const CardInstance*> Board::getCardsOfType(unsigned int type) const {
+	std::vector<std::shared_ptr<const Card::Instance>> Board::getCardsOfType(unsigned int type) const {
 		return this->getCardsOfType(type, false);
 	}
 
 
-  Matrix<unsigned char>* Board::vectorize () const {
-    std::cout << "Vectorizing Board..." << std::endl;
-    Matrix<unsigned char>* result = new Matrix<unsigned char>();
+  std::unique_ptr<Matrix<unsigned char, 12>> Board::vectorize () const {
+    std::unique_ptr<Matrix<unsigned char, 12>> result = std::make_unique<Matrix<unsigned char, 12>>();
 
-    for (CardInstance* card : this->m_Cards) {
-      unsigned char* cardVector = card->vectorize(true);
-      result->put(cardVector, 12);
-      delete [] cardVector;
+    for (std::shared_ptr<const Card::Instance> card : this->m_Cards) {
+      std::array<unsigned char, 12> cardVector = card->vectorize(true);
+      result->put(cardVector);
     }
 
     return result;
   }
+
+
 
 }
