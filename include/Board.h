@@ -20,7 +20,7 @@ namespace MTG {
 			std::vector<std::shared_ptr<const Card::Instance>> getCardsOfType(unsigned int type) const;
 			std::vector<std::shared_ptr<const Card::Instance>> getCardsOfType(unsigned int type, bool onlyUntapped) const;
 
-      std::unique_ptr<Matrix<unsigned char, 12>> vectorize () const;
+      std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> vectorize (std::size_t playerIdx) const;
 
 		protected:
 			std::vector<std::shared_ptr<Card::Instance>> m_Cards;

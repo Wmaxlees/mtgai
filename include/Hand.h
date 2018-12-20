@@ -20,7 +20,7 @@ namespace MTG {
 
 			std::vector<std::shared_ptr<const Card::Instance>> getPlayableCards(const Mana mana) const;
 
-      std::unique_ptr<Matrix<unsigned char, 12>> vectorize () const;
+      std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> vectorize (std::size_t playerIdx) const;
 
 			friend std::ostream& operator<< (std::ostream& stream, const Hand& hand);
 

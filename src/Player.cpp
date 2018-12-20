@@ -53,6 +53,10 @@ namespace MTG {
 	}
 
 
+  bool Player::isDead () {
+    return this->m_Health <= 0;
+  }
+
 	std::vector<std::shared_ptr<const Card::Instance>> Player::getInstantSpeedMoves () const {
 		std::vector<std::shared_ptr<const Card::Instance>> moves;
 
@@ -75,12 +79,15 @@ namespace MTG {
 	}
 
 
-  std::unique_ptr<Matrix<unsigned char, 12>> Player::vectorize () const {
+  std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> Player::vectorize (bool hideHand, std::size_t playerIdx) const {
     std::cout << "Vectorizing Player..." << std::endl;
 
-    std::unique_ptr<Matrix<unsigned char, 12>> result = this->m_Board.vectorize();
-    std::unique_ptr<Matrix<unsigned char, 12>> hand = this->m_Hand.vectorize();
-    result->append(hand);
+    std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> result = this->m_Board.vectorize(playerIdx);
+
+    if (!hideHand) {
+      std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> hand = this->m_Hand.vectorize(playerIdx);
+      result->append(hand);
+    }
 
     return move(result);
   }

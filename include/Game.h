@@ -4,8 +4,10 @@
 
 #include <vector>
 
-#include "Matrix.h"
+#include "EnvState.h"
 #include "Player.h"
+#include "Matrix.h"
+
 
 namespace MTG {
 
@@ -15,8 +17,8 @@ namespace MTG {
 			Game (unsigned char playerCount, std::array<std::shared_ptr<Deck::DeckBase>, 6> decks, bool verbose);
 			~Game ();
 
-      void step ();
-		  std::unique_ptr<Matrix<unsigned char, 12>> reset ();
+      std::unique_ptr<EnvState> getNextMoveOption ();
+		  void reset ();
 
 			static const unsigned char PHASE_BEGINNING = 0;
 			static const unsigned char PHASE_UNTAP = 1;
@@ -47,7 +49,7 @@ namespace MTG {
 
 			void nextPlayer ();
 
-      std::unique_ptr<Matrix<unsigned char, 12>> vectorize () const;
+      std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> vectorize () const;
 
 
 		private:

@@ -29,7 +29,7 @@ namespace MTG {
 	}
 
 
-  void Game::step () {
+  std::unique_ptr<EnvState> Game::getNextMoveOption () {
     switch (this->m_Phase) {
       case Game::PHASE_END:
         this->nextPlayer();
@@ -39,15 +39,22 @@ namespace MTG {
       case Game::PHASE_DRAW:
         this->m_Players[this->m_CurrentPlayer]->drawCards(1);
       case Game::PHASE_MAIN:
-        return;
         break;
-
-
     }
+
+
+    std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> environment = this->vectorize();
+    bool gameOver = false;
+    for (std::size_t idx = 0; idx < this->m_PlayerCount; ++idx) {
+      gameOver &= this->m_Players[idx]->isDead();
+    }
+    int reward = 0;
+
+    return result;
   }
 
 
-  std::unique_ptr<Matrix<unsigned char, 12>> Game::reset () {
+  void Game::reset () {
     std::cout << "Resetting..." << std::endl;
     for (unsigned char i = 0; i < this->m_PlayerCount; ++i) {
       std::unique_ptr<Deck::Instance> deck = this->m_Decks[i]->newInstance();
@@ -60,10 +67,6 @@ namespace MTG {
     std::cout << "Initializing state variables..." << std::endl;
 		this->m_CurrentPlayer = 0;
 		this->m_Phase = Game::PHASE_BEGINNING;
-
-    std::unique_ptr<Matrix<unsigned char, 12>> result = this->vectorize();
-
-    return result;
 	}
 
 
@@ -85,18 +88,21 @@ namespace MTG {
 		this->m_CurrentPlayer = (this->m_CurrentPlayer + 1) % this->m_PlayerCount;
 	}
 
-  std::unique_ptr<Matrix<unsigned char, 12>> Game::vectorize () const {
+  std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> Game::vectorize () const {
     std::cout << "Vectorizing Game..." << std::endl;
-    std::unique_ptr<Matrix<unsigned char, 12>> result = this->m_Players[this->m_CurrentPlayer]->vectorize();
+    std::size_t playerIdx = 0;
+    std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> result = this->m_Players[this->m_CurrentPlayer]->vectorize(false, playerIdx);
 
     std::size_t player = this->m_CurrentPlayer;
     player = (player + 1) % this->m_PlayerCount;
+    ++playerIdx;
     while (player != this->m_CurrentPlayer) {
-      std::unique_ptr<Matrix<unsigned char, 12>> playerVec = this->m_Players[player]->vectorize();
+      std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> playerVec = this->m_Players[player]->vectorize(true, playerIdx);
       result->append(playerVec);
       player = (player + 1) % this->m_PlayerCount;
+      ++playerIdx;
     }
-    
+
     return result;
   }
 

@@ -35,7 +35,9 @@ namespace MTG {
 
 		void clearMana ();
 
-    std::unique_ptr<Matrix<unsigned char, 12>> vectorize () const;
+    bool isDead ();
+
+    std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> vectorize (bool hideHand, std::size_t playerIdx) const;
 
 	protected:
 		unsigned char m_Health;

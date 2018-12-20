@@ -14,11 +14,13 @@ namespace MTG {
 	class ManaCost
 	{
 		public:
+      static const std::size_t VECTOR_SIZE = 7;
+
       ManaCost ();
 			ManaCost (std::string manaCostString);
 			~ManaCost ();
 
-      std::array<unsigned char, 7> vectorize () const;
+      std::array<unsigned char, VECTOR_SIZE> vectorize () const;
 
 			friend class Mana;
 

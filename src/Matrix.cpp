@@ -3,7 +3,7 @@
  * @Date:   2018-12-18T12:31:30-07:00
  * @Email:  william.lees@nist.gov
  * @Last modified by:   W. Max Lees
- * @Last modified time: 2018-12-20T14:25:35-07:00
+ * @Last modified time: 2018-12-20T14:55:35-07:00
  */
 
 #include <algorithm>
@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "Matrix.h"
+#include "Card/Instance.h"
 
 template <class T, std::size_t W>
 Matrix<T, W>::Matrix () {
@@ -78,4 +79,4 @@ T& Matrix<T, W>::operator [] (std::size_t i) {
   return this->m_Data[i];
 }
 
-template class Matrix <unsigned char, 12>;
+template class Matrix <unsigned char, MTG::Card::Instance::VECTOR_SIZE>;

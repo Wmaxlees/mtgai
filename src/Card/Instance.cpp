@@ -41,17 +41,18 @@ namespace MTG {
       this->m_Tapped = false;
     }
 
-    std::array<unsigned char, 12> Instance::vectorize (bool onBoard) const {
-      // 0-9 base card info
-      // 10 tapped
-      // 11 on board
-      std::array<unsigned char, 12> result;
+    std::array<unsigned char, Instance::VECTOR_SIZE> Instance::vectorize (bool onBoard, std::size_t playerIdx) const {
+      // 0 tapped
+      // 1 on board
+      // 2 player idx
+      // Remaining are base card info
+      std::array<unsigned char, Instance::VECTOR_SIZE> result;
+      result[0] = this->m_Tapped ? 1 : 0;
+      result[1] = onBoard ? 1 : 0;
+      result[2] = playerIdx;
 
-      std::array<unsigned char, 10> baseCard = this->m_BaseCard->vectorize();
-      std::copy(baseCard.begin(), baseCard.end(), result.begin());
-
-      result[10] = this->m_Tapped ? 1 : 0;
-      result[11] = onBoard ? 1 : 0;
+      std::array<unsigned char, CardBase::VECTOR_SIZE> baseCard = this->m_BaseCard->vectorize();
+      std::copy(baseCard.begin(), baseCard.end(), result.begin()+3);
 
       return result;
     }

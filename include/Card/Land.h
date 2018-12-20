@@ -10,10 +10,11 @@ namespace MTG {
 
   			bool isAffordable(const Mana& mana) const override;
 
+        void setManaTap (std::string manaString) override;
   			void setPower(unsigned char power) override;
   			void setToughness(unsigned char toughness) override;
 
-        std::array<unsigned char, 10> vectorize () const override;
+        std::array<unsigned char, CardBase::VECTOR_SIZE> vectorize () const override;
 
   		protected:
   			unsigned char m_LandColorless;

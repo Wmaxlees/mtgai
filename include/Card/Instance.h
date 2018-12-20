@@ -13,6 +13,8 @@ namespace MTG {
   	class Instance
   	{
   		public:
+        static const std::size_t VECTOR_SIZE = CardBase::VECTOR_SIZE + 3;
+
   			Instance (std::shared_ptr<CardBase> baseCard);
   			~Instance ();
 
@@ -26,7 +28,7 @@ namespace MTG {
 
   			friend std::ostream& operator<< (std::ostream& stream, const Instance& card);
 
-        std::array<unsigned char, 12> vectorize (bool onBoard) const;
+        std::array<unsigned char, VECTOR_SIZE> vectorize (bool onBoard, std::size_t playerIdx) const;
 
   		protected:
   			std::shared_ptr<CardBase> m_BaseCard;

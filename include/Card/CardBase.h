@@ -23,6 +23,8 @@ namespace MTG {
   			static const unsigned char INSTANT = 32;
   			static const unsigned char SORCERY = 64;
 
+        static const std::size_t VECTOR_SIZE = ManaCost::VECTOR_SIZE + 9;
+
   			static std::shared_ptr<CardBase> cardFromFile (std::string filename);
   			CardBase ();
   			~CardBase ();
@@ -35,10 +37,11 @@ namespace MTG {
 
   			void setName (std::string name);
   			void setCost (std::string manaCostString);
+        virtual void setManaTap (std::string manaString) = 0;
   			virtual void setPower (unsigned char power) = 0;
   			virtual void setToughness (unsigned char toughness) = 0;
 
-        virtual std::array<unsigned char, 10> vectorize () const = 0;
+        virtual std::array<unsigned char, VECTOR_SIZE> vectorize () const = 0;
 
   			friend std::ostream& operator<< (std::ostream& stream, const CardBase& card);
 

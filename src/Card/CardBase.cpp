@@ -51,6 +51,9 @@ namespace MTG {
   				std::getline(cardFile, line);
   				result->setName(line);
 
+          std::getline(cardFile, line);
+  				result->setManaTap(line);
+
   				break;
   			case CardBase::PLANESWALKER:
 

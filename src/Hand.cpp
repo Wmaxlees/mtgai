@@ -50,11 +50,11 @@ namespace MTG {
 		return result;
 	}
 
-  std::unique_ptr<Matrix<unsigned char, 12>> Hand::vectorize () const {
-    std::unique_ptr<Matrix<unsigned char, 12>> result = std::make_unique<Matrix<unsigned char, 12>>();
+  std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> Hand::vectorize (std::size_t playerIdx) const {
+    std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> result = std::make_unique<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>>();
 
     for (const std::shared_ptr<Card::Instance>& card : this->m_Cards) {
-      std::array<unsigned char, 12> cardVector = card->vectorize(false);
+      std::array<unsigned char, Card::Instance::VECTOR_SIZE> cardVector = card->vectorize(false, playerIdx);
       result->put(cardVector);
     }
 
