@@ -35,6 +35,7 @@ int main (int argc, char** argv) {
 
 	MTG::Game game(2, decks, true);
 
-	std::unique_ptr<Matrix<unsigned char, MTG::Card::Instance::VECTOR_SIZE>> result = game.reset();
-  std::cout << *result << std::endl;
+  game.reset();
+	//std::unique_ptr<Matrix<unsigned char, MTG::Card::Instance::VECTOR_SIZE>> result = game.reset();
+  //std::cout << *result << std::endl;
 }

@@ -1,7 +1,7 @@
+#include <iostream>
 
 #include "Game.h"
-
-#include <iostream>
+#include "Event/EGameStart.h"
 
 namespace MTG {
 	Game::Game (unsigned char playerCount, std::array<std::shared_ptr<Deck::DeckBase>, 6> decks) : Game(playerCount, decks, false) {}
@@ -50,7 +50,14 @@ namespace MTG {
     }
     int reward = 0;
 
-    return result;
+    std::unique_ptr<EnvState> result = std::make_unique<EnvState>(
+      move(environment),
+      reward,
+      gameOver,
+      nullptr
+    );
+
+    return move(result);
   }
 
 
@@ -58,29 +65,17 @@ namespace MTG {
     std::cout << "Resetting..." << std::endl;
     for (unsigned char i = 0; i < this->m_PlayerCount; ++i) {
       std::unique_ptr<Deck::Instance> deck = this->m_Decks[i]->newInstance();
-			this->m_Players[i] = std::make_unique<Player>(20, move(deck));
+			this->m_Players[i] = std::make_shared<PlayerState>(20, move(deck), i);
+
+      this->m_EventManager.reg("GameStart", this->m_Players[i]);
+      this->m_EventManager.reg("NewStep", this->m_Players[i]);
 		}
 
-    std::cout << "Drawing opening hands..." << std::endl;
-		this->drawOpeningCards();
+    this->m_EventManager.trigger(std::make_unique<Event::EGameStart>());
 
     std::cout << "Initializing state variables..." << std::endl;
 		this->m_CurrentPlayer = 0;
 		this->m_Phase = Game::PHASE_BEGINNING;
-	}
-
-
-
-  void Game::drawOpeningCards () {
-		for (unsigned char i = 0; i < this->m_PlayerCount; ++i) {
-      this->m_Players[i]->shuffle();
-			this->m_Players[i]->drawCards(7);
-			if (this->m_Verbose) {
-				std::cout << "Player " << i + 1 << " Starting Hand:" << std::endl;
-				this->m_Players[i]->printHand();
-				std::cout << std::endl << std::endl;
-			}
-		}
 	}
 
 

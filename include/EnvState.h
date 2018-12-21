@@ -3,7 +3,7 @@
  * @Date:   2018-12-20T15:24:27-07:00
  * @Email:  william.lees@nist.gov
  * @Last modified by:   W. Max Lees
- * @Last modified time: 2018-12-20T15:37:16-07:00
+ * @Last modified time: 2018-12-21T12:12:15-07:00
  */
 
 #pragma once
@@ -24,13 +24,13 @@ namespace MTG {
         std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> observation,
         int reward,
         bool done,
-        std::shared_ptr<Card::Instance> m_PlayCard
+        std::shared_ptr<Card::Instance> playCard
       );
-      
+
       ~EnvState();
 
     protected:
-      std::unique_ptr<Matrix<unsigned char, W>> m_Observation;
+      std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> m_Observation;
       int m_Reward;
       bool m_Done;
       std::shared_ptr<Card::Instance> m_PlayCard;

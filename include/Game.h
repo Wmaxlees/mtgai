@@ -4,8 +4,9 @@
 
 #include <vector>
 
+#include "Event/Manager.h"
 #include "EnvState.h"
-#include "Player.h"
+#include "PlayerState.h"
 #include "Matrix.h"
 
 
@@ -41,11 +42,11 @@ namespace MTG {
 
 			unsigned char m_Phase;
 
-      std::array<std::unique_ptr<Player>, 6> m_Players;
+      std::array<std::shared_ptr<PlayerState>, 6> m_Players;
       std::array<std::shared_ptr<Deck::DeckBase>, 6> m_Decks;
 			bool m_Verbose;
 
-			void drawOpeningCards ();
+      Event::Manager m_EventManager;
 
 			void nextPlayer ();
 
