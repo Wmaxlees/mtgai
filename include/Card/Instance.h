@@ -25,6 +25,7 @@ namespace MTG {
         void untap ();
 
   			const ManaCost getCost () const;
+        const std::string getName () const;
 
   			friend std::ostream& operator<< (std::ostream& stream, const Instance& card);
 

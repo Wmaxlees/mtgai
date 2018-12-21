@@ -35,7 +35,26 @@ int main (int argc, char** argv) {
 
 	MTG::Game game(2, decks, true);
 
-  game.reset();
+
+
+  for (std::size_t epoch = 0; epoch < 1000000; ++epoch) {
+    game.reset();
+    std::unique_ptr<MTG::EnvState> state = game.getCurrentState();
+    while (!state->isGameOver()) {
+      std::vector<std::shared_ptr<const MTG::Card::Instance>> moves = game.getCurrentMoveList();
+      std::cout << "Possible moves: " << moves.size() << std::endl;
+      for (auto it = moves.cbegin(); it != moves.cend(); ++it) {
+        bool performAction = (bool)(rand() % 2);
+        if (performAction) {
+          game.perform(*it);
+          break;
+        }
+      }
+      // No move chosen, we're passing
+      game.pass();
+      state = game.getCurrentState();
+    }
+  }
 	//std::unique_ptr<Matrix<unsigned char, MTG::Card::Instance::VECTOR_SIZE>> result = game.reset();
   //std::cout << *result << std::endl;
 }

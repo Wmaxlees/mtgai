@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 
 #include "Hand.h"
@@ -17,16 +18,16 @@ namespace MTG {
 		this->m_Cards.push_back(move(card));
 	}
 
-	std::shared_ptr<Card::Instance> Hand::removeCard (std::shared_ptr<const Card::Instance> card) {
-		unsigned int idx = 0;
-		for (; idx < this->m_Cards.size(); ++idx) {
-			if (&(*card) == &(*(this->m_Cards[idx]))) {
-				break;
-			}
-		}
+  std::shared_ptr<Card::Instance> Hand::removeCard (std::shared_ptr<const Card::Instance> card) {
+		auto it = std::find(this->m_Cards.begin(), this->m_Cards.end(), card);
 
-    std::shared_ptr<Card::Instance> result = this->m_Cards.at(idx);
-		this->m_Cards.erase(this->m_Cards.begin()+idx-1);
+    if (it == this->m_Cards.end()) {
+      throw -1;
+    }
+
+    std::shared_ptr<Card::Instance> result = *it;
+    this->m_Cards.erase(it);
+
     return result;
 	}
 
@@ -38,7 +39,7 @@ namespace MTG {
 		return stream;
 	}
 
-	std::vector<std::shared_ptr<const Card::Instance>> Hand::getPlayableCards(const Mana mana) const {
+	std::vector<std::shared_ptr<const Card::Instance>> Hand::getPlayableCards (const Mana mana) const {
 		std::vector<std::shared_ptr<const Card::Instance>> result;
 
 		for (const std::shared_ptr<Card::Instance> card : this->m_Cards) {

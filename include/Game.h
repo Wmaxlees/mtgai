@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "Event/Handler.h"
 #include "Event/Manager.h"
 #include "EnvState.h"
 #include "PlayerState.h"
@@ -12,14 +13,18 @@
 
 namespace MTG {
 
-	class Game {
+	class Game : public Event::Handler, std::enable_shared_from_this<Event::Handler> {
 		public:
 			Game (unsigned char playerCount, std::array<std::shared_ptr<Deck::DeckBase>, 6> decks);
 			Game (unsigned char playerCount, std::array<std::shared_ptr<Deck::DeckBase>, 6> decks, bool verbose);
 			~Game ();
 
-      std::unique_ptr<EnvState> getNextMoveOption ();
+      std::vector<std::shared_ptr<const Card::Instance>> getCurrentMoveList ();
+      std::unique_ptr<EnvState> getCurrentState();
+      void perform (std::shared_ptr<const Card::Instance> card);
+      void pass ();
 		  void reset ();
+      void handle (std::unique_ptr<Event::EventBase>& event) override;
 
 			static const unsigned char PHASE_BEGINNING = 0;
 			static const unsigned char PHASE_UNTAP = 1;
@@ -48,6 +53,7 @@ namespace MTG {
 
       Event::Manager m_EventManager;
 
+      void advancePhase ();
 			void nextPlayer ();
 
       std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> vectorize () const;

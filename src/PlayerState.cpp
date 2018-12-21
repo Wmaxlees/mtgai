@@ -1,4 +1,4 @@
-#include "Event/ENewStep.h"
+#include "Event/ENewPhase.h"
 #include "PlayerState.h"
 #include "Game.h"
 
@@ -15,32 +15,6 @@ namespace MTG {
 
 	PlayerState::~PlayerState () {
     std::cout << "Destroying player object." << std::endl;
-	}
-
-
-  void PlayerState::shuffle () {
-    this->m_Deck->shuffle();
-  }
-
-
-	bool PlayerState::drawCards (unsigned char amount) {
-		for (unsigned char i = 0; i < amount; ++i) {
-			if (this->m_Deck->empty()) {
-				return false;
-			}
-
-			this->m_Hand.addCard(this->m_Deck->getNextCard());
-		}
-
-		return true;
-	}
-
-  void PlayerState::untapAll () {
-    this->m_Board.untapAll();
-  }
-
-	void PlayerState::clearMana () {
-		this->m_Mana.clear();
 	}
 
 	void PlayerState::playCard (std::shared_ptr<const Card::Instance> card) {
@@ -82,17 +56,15 @@ namespace MTG {
       return;
     }
 
-    if (event->getType() == "NewStep") {
-      Event::ENewStep* castEvent = (Event::ENewStep*)&(*event);
-      this->handleNewStep(*castEvent);
+    if (event->getType() == "NewPhase") {
+      Event::ENewPhase* castEvent = (Event::ENewPhase*)&(*event);
+      this->handleNewPhase(*castEvent);
       return;
     }
   }
 
 
   std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> PlayerState::vectorize (bool hideHand, std::size_t playerIdx) const {
-    std::cout << "Vectorizing PlayerState..." << std::endl;
-
     std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> result = this->m_Board.vectorize(playerIdx);
 
     if (!hideHand) {
@@ -106,16 +78,38 @@ namespace MTG {
 
   void PlayerState::handleGameStart () {
     std::cout << "Game starting for player: " << (unsigned int)this->m_UniqueID << std::endl;
-    this->shuffle();
+    this->m_Deck->shuffle();
     this->drawCards(7);
     std::cout << "Opening Hand: " << std::endl;
     std::cout << this->m_Hand << std::endl;
   }
 
-  void PlayerState::handleNewStep (Event::ENewStep& newStep) {
-    if (newStep.getPlayerID() != this->m_UniqueID) {
+  void PlayerState::handleNewPhase (Event::ENewPhase& newPhase) {
+  	this->m_Mana.clear();
+    if (newPhase.getPlayerID() != this->m_UniqueID) {
       return;
     }
+
+    if (newPhase.getPhaseID() == Game::PHASE_UNTAP) {
+      this->m_Board.untapAll();
+      return;
+    }
+
+    if (newPhase.getPhaseID() == Game::PHASE_DRAW) {
+      this->drawCards(1);
+    }
   }
+
+  bool PlayerState::drawCards (unsigned char amount) {
+		for (unsigned char i = 0; i < amount; ++i) {
+			if (this->m_Deck->empty()) {
+				return false;
+			}
+
+			this->m_Hand.addCard(this->m_Deck->getNextCard());
+		}
+
+		return true;
+	}
 
 }

@@ -3,7 +3,7 @@
  * @Date:   2018-12-21T12:09:44-07:00
  * @Email:  william.lees@nist.gov
  * @Last modified by:   W. Max Lees
- * @Last modified time: 2018-12-21T12:12:07-07:00
+ * @Last modified time: 2018-12-21T15:37:00-07:00
  */
 
 #include "EnvState.h"
@@ -23,6 +23,10 @@ namespace MTG {
   }
 
   EnvState::~EnvState () {
+  }
+
+  bool EnvState::isGameOver () {
+    return this->m_Done;
   }
 
 }

@@ -3,7 +3,7 @@
  * @Date:   2018-12-20T15:24:27-07:00
  * @Email:  william.lees@nist.gov
  * @Last modified by:   W. Max Lees
- * @Last modified time: 2018-12-21T12:12:15-07:00
+ * @Last modified time: 2018-12-21T15:37:27-07:00
  */
 
 #pragma once
@@ -28,6 +28,8 @@ namespace MTG {
       );
 
       ~EnvState();
+
+      bool isGameOver ();
 
     protected:
       std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> m_Observation;

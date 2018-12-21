@@ -7,7 +7,8 @@ namespace MTG {
 
 	int getNextValue (std::string& manaCostString);
 
-  ManaCost::ManaCost () {}
+  ManaCost::ManaCost () : ManaCost("0;0;0;0;0;0;0") {
+  }
 
 	ManaCost::ManaCost (std::string manaCostString) {
 		std::string delimiter = ";";

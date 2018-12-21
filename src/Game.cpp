@@ -2,6 +2,7 @@
 
 #include "Game.h"
 #include "Event/EGameStart.h"
+#include "Event/EPass.h"
 
 namespace MTG {
 	Game::Game (unsigned char playerCount, std::array<std::shared_ptr<Deck::DeckBase>, 6> decks) : Game(playerCount, decks, false) {}
@@ -21,6 +22,8 @@ namespace MTG {
     for (unsigned char i = 0; i < 6; ++i) {
 			this->m_Players[i] = nullptr;
 		}
+
+    this->m_EventManager.reg("Pass", this);
 	}
 
 
@@ -28,21 +31,22 @@ namespace MTG {
     std::cout << "Destroying Game object." << std::endl;
 	}
 
-
-  std::unique_ptr<EnvState> Game::getNextMoveOption () {
+  std::vector<std::shared_ptr<const Card::Instance>> Game::getCurrentMoveList () {
+    std::vector<std::shared_ptr<const Card::Instance>> result;
     switch (this->m_Phase) {
       case Game::PHASE_END:
-        this->nextPlayer();
       case Game::PHASE_BEGINNING:
       case Game::PHASE_UNTAP:
-        this->m_Players[this->m_CurrentPlayer]->untapAll();
       case Game::PHASE_DRAW:
-        this->m_Players[this->m_CurrentPlayer]->drawCards(1);
+        break;
       case Game::PHASE_MAIN:
+        result = this->m_Players[this->m_CurrentPlayer]->getMainPhaseMoves();
         break;
     }
+    return result;
+  }
 
-
+  std::unique_ptr<EnvState> Game::getCurrentState() {
     std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> environment = this->vectorize();
     bool gameOver = false;
     for (std::size_t idx = 0; idx < this->m_PlayerCount; ++idx) {
@@ -60,15 +64,15 @@ namespace MTG {
     return move(result);
   }
 
-
   void Game::reset () {
     std::cout << "Resetting..." << std::endl;
+
     for (unsigned char i = 0; i < this->m_PlayerCount; ++i) {
       std::unique_ptr<Deck::Instance> deck = this->m_Decks[i]->newInstance();
 			this->m_Players[i] = std::make_shared<PlayerState>(20, move(deck), i);
 
-      this->m_EventManager.reg("GameStart", this->m_Players[i]);
-      this->m_EventManager.reg("NewStep", this->m_Players[i]);
+      this->m_EventManager.reg("GameStart", &(*this->m_Players[i]));
+      this->m_EventManager.reg("NewStep", &(*this->m_Players[i]));
 		}
 
     this->m_EventManager.trigger(std::make_unique<Event::EGameStart>());
@@ -78,13 +82,42 @@ namespace MTG {
 		this->m_Phase = Game::PHASE_BEGINNING;
 	}
 
+  void Game::handle (std::unique_ptr<Event::EventBase>& event) {
+    if (event->getType() == "Pass") {
+      this->advancePhase();
+      return;
+    }
+  }
+
+
+  void Game::advancePhase () {
+    switch (this->m_Phase) {
+      case Game::PHASE_END:
+        this->m_Phase = Game::PHASE_BEGINNING;
+        this->nextPlayer();
+        break;
+      case Game::PHASE_BEGINNING:
+        this->m_Phase = Game::PHASE_UNTAP;
+        break;
+      case Game::PHASE_UNTAP:
+        this->m_Phase = Game::PHASE_DRAW;
+        break;
+      case Game::PHASE_DRAW:
+        this->m_Phase = Game::PHASE_MAIN;
+        break;
+      case Game::PHASE_MAIN:
+        this->m_Phase = Game::PHASE_END;
+        break;
+      // Missing Phases
+    }
+  }
+
 
 	void Game::nextPlayer () {
 		this->m_CurrentPlayer = (this->m_CurrentPlayer + 1) % this->m_PlayerCount;
 	}
 
   std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> Game::vectorize () const {
-    std::cout << "Vectorizing Game..." << std::endl;
     std::size_t playerIdx = 0;
     std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> result = this->m_Players[this->m_CurrentPlayer]->vectorize(false, playerIdx);
 
@@ -99,6 +132,20 @@ namespace MTG {
     }
 
     return result;
+  }
+
+  void Game::perform (std::shared_ptr<const Card::Instance> card) {
+    std::cout << "Player " << (unsigned int)this->m_CurrentPlayer << " playing " << card->getName() << std::endl;
+    std::cout << "Press Enter to Continue" << std::endl;
+    std::cin.ignore();
+    this->m_Players[this->m_CurrentPlayer]->playCard(card);
+  }
+
+  void Game::pass () {
+    std::cout << "Player " << (unsigned int)this->m_CurrentPlayer << " passing" << std::endl;
+    std::cout << "Press Enter to Continue" << std::endl;
+    std::cin.ignore();
+    this->m_EventManager.trigger(std::make_unique<Event::EPass>());
   }
 
 }

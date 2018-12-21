@@ -4,6 +4,7 @@
 namespace MTG {
 
 	Mana::Mana () {
+    this->clear();
 	}
 
 

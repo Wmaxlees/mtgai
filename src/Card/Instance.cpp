@@ -37,6 +37,10 @@ namespace MTG {
   		return this->m_BaseCard->getCost();
   	}
 
+    const std::string Instance::getName () const {
+      return this->m_BaseCard->getName();
+    }
+
     void Instance::untap () {
       this->m_Tapped = false;
     }

@@ -8,7 +8,7 @@
 #include "Board.h"
 #include "Card/Instance.h"
 #include "Deck/DeckBase.h"
-#include "Event/ENewStep.h"
+#include "Event/ENewPhase.h"
 #include "Event/EventBase.h"
 #include "Event/Handler.h"
 #include "Hand.h"
@@ -23,18 +23,12 @@ namespace MTG {
 		PlayerState (unsigned char startingHealth, std::unique_ptr<Deck::Instance> deck, unsigned char uniqueID);
 		~PlayerState ();
 
-    void shuffle ();
-		bool drawCards (unsigned char amount);
-    void untapAll ();
-
 		std::vector<std::shared_ptr<const Card::Instance>> getInstantSpeedMoves () const;
 		std::vector<std::shared_ptr<const Card::Instance>> getMainPhaseMoves () const;
 		std::vector<std::shared_ptr<const Card::Instance>> getPossibleAttackers () const;
 		std::vector<std::shared_ptr<const Card::Instance>> getPossibleBlockers () const;
 
 		void playCard (std::shared_ptr<const Card::Instance> card);
-
-		void clearMana ();
 
     bool isDead ();
 
@@ -51,7 +45,9 @@ namespace MTG {
 		Mana m_Mana;
 
     void handleGameStart ();
-    void handleNewStep (Event::ENewStep& newStep);
+    void handleNewPhase (Event::ENewPhase& newPhase);
+
+		bool drawCards (unsigned char amount);
 
 	private:
 
