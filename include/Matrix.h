@@ -43,8 +43,8 @@ class Matrix {
   protected:
     std::unique_ptr<T[]> m_Data;
 
-    int m_Height;
-    int m_Assigned;
+    unsigned int m_Height;
+    unsigned int m_Assigned;
 
   private:
     static const int EXPANSION_SIZE = 20;

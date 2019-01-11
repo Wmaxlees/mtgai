@@ -5,8 +5,8 @@
 #include "Card/Creature.h"
 #include "Card/Land.h"
 
-namespace MTG {
-  namespace Card {
+namespace mtg {
+  namespace card {
   	std::shared_ptr<CardBase> CardBase::cardFromFile(std::string filename) {
   		std::shared_ptr<CardBase> result;
 
@@ -22,7 +22,7 @@ namespace MTG {
 
   				break;
   			case CardBase::CREATURE:
-  				result = std::make_shared<Card::Creature>();
+  				result = std::make_shared<card::Creature>();
 
   				std::getline(cardFile, line);
   				result->setName(line);
@@ -46,7 +46,7 @@ namespace MTG {
 
   				break;
   			case CardBase::LAND:
-  				result = std::make_shared<Card::Land>();
+  				result = std::make_shared<card::Land>();
 
   				std::getline(cardFile, line);
   				result->setName(line);

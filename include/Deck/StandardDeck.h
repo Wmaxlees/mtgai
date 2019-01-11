@@ -8,18 +8,18 @@
 
 #include "Deck/DeckBase.h"
 
-namespace MTG {
-  namespace Deck {
+namespace mtg {
+  namespace deck {
   	class StandardDeck : public DeckBase
   	{
   		public:
   			StandardDeck ();
   			~StandardDeck ();
 
-  			std::unique_ptr<Instance> newInstance () const;
+  			std::unique_ptr<DeckInstance> newInstance () const;
 
   		protected:
-  			std::array<std::shared_ptr<Card::CardBase>, 60> m_Cards;
+  			std::array<std::shared_ptr<card::CardBase>, 60> m_Cards;
   	};
   }
 }

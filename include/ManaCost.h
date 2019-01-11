@@ -9,18 +9,17 @@
 
 #include "Mana.h"
 
-namespace MTG {
+namespace mtg {
 
-	class ManaCost
-	{
+	class ManaCost {
 		public:
-      static const std::size_t VECTOR_SIZE = 7;
+			static const std::size_t VECTOR_SIZE = 7;
 
-      ManaCost ();
+			ManaCost ();
 			ManaCost (std::string manaCostString);
 			~ManaCost ();
 
-      std::array<unsigned char, VECTOR_SIZE> vectorize () const;
+			std::array<unsigned char, VECTOR_SIZE> vectorize () const;
 
 			friend class Mana;
 

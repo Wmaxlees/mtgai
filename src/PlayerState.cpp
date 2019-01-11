@@ -1,106 +1,156 @@
-#include "Event/ENewPhase.h"
+#include "Event/NewPhaseEvent.h"
+#include "Event/PlayCardEvent.h"
+#include "Event/StartDrawStepEvent.h"
+#include "Event/TapLandEvent.h"
 #include "PlayerState.h"
 #include "Game.h"
 
 #include <iostream>
 
-namespace MTG {
+namespace mtg {
 
-	PlayerState::PlayerState (unsigned char startingHealth, std::unique_ptr<Deck::Instance> deck, unsigned char uniqueID) {
-    this->m_UniqueID = uniqueID;
+	PlayerState::PlayerState(unsigned char startingHealth, std::unique_ptr<deck::DeckInstance> deck, unsigned char uniqueID) {
+		this->m_UniqueID = uniqueID;
 		this->m_Health = startingHealth;
 		this->m_Deck = move(deck);
 	}
 
 
-	PlayerState::~PlayerState () {
-    std::cout << "Destroying player object." << std::endl;
+	PlayerState::~PlayerState() {
+		std::cout << "Destroying player object." << std::endl;
 	}
 
-	void PlayerState::playCard (std::shared_ptr<const Card::Instance> card) {
+	void PlayerState::playCard(std::shared_ptr<const card::CardInstance> card) {
 		this->m_Mana.remove(card->getCost());
-		std::shared_ptr<Card::Instance> playedCard = this->m_Hand.removeCard(card);
+		std::shared_ptr<card::CardInstance> playedCard = this->m_Hand.removeCard(card);
+		if (playedCard->isType(card::CardBase::CREATURE)) {
+			playedCard->setSummoningSickness();
+		}
 		this->m_Board.addCard(playedCard);
 	}
 
 
-  bool PlayerState::isDead () {
-    return this->m_Health <= 0;
-  }
+	bool PlayerState::isDead() {
+		return this->m_Health <= 0;
+	}
 
-	std::vector<std::shared_ptr<const Card::Instance>> PlayerState::getInstantSpeedMoves () const {
-		std::vector<std::shared_ptr<const Card::Instance>> moves;
+	const std::vector<std::shared_ptr<action::ActionBase>> PlayerState::getInstantSpeedMoves() const {
+		std::vector<std::shared_ptr<action::ActionBase>> moves;
 
 		return moves;
 	}
 
 
-	std::vector<std::shared_ptr<const Card::Instance>> PlayerState::getMainPhaseMoves () const {
-		return this->m_Hand.getPlayableCards(this->m_Mana);
+	const std::vector<std::shared_ptr<action::ActionBase>> PlayerState::getMainPhaseMoves() const {
+		std::vector<std::shared_ptr<action::ActionBase>> result = this->m_Board.getTappableLands(this->m_UniqueID);
+
+		std::vector<std::shared_ptr<action::ActionBase>> playableAbilities = this->m_Board.getPlayableAbilities(this->m_UniqueID, this->m_Mana);
+		for (auto it = playableAbilities.begin(); it != playableAbilities.end(); ++it) {
+			result.push_back(move(*it));
+		}
+		
+		std::vector<std::shared_ptr<action::ActionBase>> playableCards = this->m_Hand.getPlayableCards(this->m_UniqueID, this->m_Mana);
+		for (auto it = playableCards.begin(); it != playableCards.end(); ++it) {
+			result.push_back(move(*it));
+		}
+
+		return result;
 	}
 
 
-	std::vector<std::shared_ptr<const Card::Instance>> PlayerState::getPossibleAttackers () const {
-		return this->m_Board.getCardsOfType(Card::CardBase::CREATURE, true);
+	const std::vector<std::shared_ptr<action::ActionBase>> PlayerState::getDeclareAttackerMoves(unsigned char targetIdx) const {
+		std::vector<std::shared_ptr<action::ActionBase>> result = this->m_Board.getDeclareAttackerMoves(this->m_UniqueID, targetIdx);
+		return result;
 	}
 
 
-	std::vector<std::shared_ptr<const Card::Instance>> PlayerState::getPossibleBlockers () const {
-		return this->m_Board.getCardsOfType(Card::CardBase::CREATURE, true);
+	const std::vector<std::shared_ptr<action::ActionBase>> PlayerState::getPossibleBlockers() const {
+		std::vector<std::shared_ptr<action::ActionBase>> moves;
+
+		return moves;
 	}
 
 
-  void PlayerState::handle (std::unique_ptr<Event::EventBase>& event) {
-    if (event->getType() == "GameStart") {
-      this->handleGameStart();
-      return;
-    }
+	void PlayerState::handle(std::unique_ptr<event::EventBase>& event) {
+		if (event->getType() == "GameStart") {
+			this->handleGameStart();
+			return;
+		}
 
-    if (event->getType() == "NewPhase") {
-      Event::ENewPhase* castEvent = (Event::ENewPhase*)&(*event);
-      this->handleNewPhase(*castEvent);
-      return;
-    }
-  }
+		if (event->getType() == "NewPhase") {
+			event::NewPhaseEvent* castEvent = (event::NewPhaseEvent*)&(*event);
+			this->handleNewPhase(*castEvent);
+			return;
+		}
+
+		if (event->getType() == "PlayCard") {
+			event::PlayCardEvent* castEvent = (event::PlayCardEvent*)&(*event);
+			if (castEvent->getPlayerIdx() != this->m_UniqueID) {
+				return;
+			}
+
+			this->playCard(castEvent->getCard());
+		}
+
+		if (event->getType() == "StartDrawStep") {
+			event::StartDrawStepEvent* castEvent = (event::StartDrawStepEvent*)&(*event);
+			if (castEvent->getPlayerIdx() != this->m_UniqueID) {
+				return;
+			}
+
+			this->drawCards(1);
+		}
+
+		if (event->getType() == "TapLand") {
+			event::TapLandEvent* castEvent = (event::TapLandEvent*)&(*event);
+			this->m_Mana.add(castEvent->getCard()->getMana());
+			castEvent->getCard()->tap();
+		}
+	}
 
 
-  std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> PlayerState::vectorize (bool hideHand, std::size_t playerIdx) const {
-    std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> result = this->m_Board.vectorize(playerIdx);
+	std::unique_ptr<Matrix<unsigned char, card::CardInstance::VECTOR_SIZE>> PlayerState::vectorize(bool hideHand, unsigned char playerIdx) const {
+		std::unique_ptr<Matrix<unsigned char, card::CardInstance::VECTOR_SIZE>> result = this->m_Board.vectorize(playerIdx);
 
-    if (!hideHand) {
-      std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> hand = this->m_Hand.vectorize(playerIdx);
-      result->append(hand);
-    }
+		if (!hideHand) {
+			std::unique_ptr<Matrix<unsigned char, card::CardInstance::VECTOR_SIZE>> hand = this->m_Hand.vectorize(playerIdx);
+			result->append(hand);
+		}
 
-    return move(result);
-  }
+		return move(result);
+	}
 
 
-  void PlayerState::handleGameStart () {
-    std::cout << "Game starting for player: " << (unsigned int)this->m_UniqueID << std::endl;
-    this->m_Deck->shuffle();
-    this->drawCards(7);
-    std::cout << "Opening Hand: " << std::endl;
-    std::cout << this->m_Hand << std::endl;
-  }
+	void PlayerState::handleGameStart() {
+		std::cout << "Game starting for player: " << (unsigned int)this->m_UniqueID << std::endl;
+		this->m_Deck->shuffle();
+		this->drawCards(7);
+		std::cout << "Opening Hand: " << std::endl;
+		std::cout << this->m_Hand << std::endl;
+	}
 
-  void PlayerState::handleNewPhase (Event::ENewPhase& newPhase) {
-  	this->m_Mana.clear();
-    if (newPhase.getPlayerID() != this->m_UniqueID) {
-      return;
-    }
+	void PlayerState::handleNewPhase(event::NewPhaseEvent& newPhase) {
+		this->m_Mana.clear();
+		if (newPhase.getPlayerID() != this->m_UniqueID) {
+			return;
+		}
 
-    if (newPhase.getPhaseID() == Game::PHASE_UNTAP) {
-      this->m_Board.untapAll();
-      return;
-    }
+		if (newPhase.getPhaseID() == Game::PHASE_BEGINNING) {
+			this->m_Board.removeAllSummoningSickness();
+		}
 
-    if (newPhase.getPhaseID() == Game::PHASE_DRAW) {
-      this->drawCards(1);
-    }
-  }
+		if (newPhase.getPhaseID() == Game::PHASE_UNTAP) {
+			this->m_Board.untapAll();
+			return;
+		}
 
-  bool PlayerState::drawCards (unsigned char amount) {
+		if (newPhase.getPhaseID() == Game::PHASE_DRAW) {
+			this->drawCards(1);
+			return;
+		}
+	}
+
+	bool PlayerState::drawCards(unsigned char amount) {
 		for (unsigned char i = 0; i < amount; ++i) {
 			if (this->m_Deck->empty()) {
 				return false;
@@ -110,6 +160,14 @@ namespace MTG {
 		}
 
 		return true;
+	}
+
+
+	std::ostream& operator<< (std::ostream& stream, const PlayerState& player) {
+		stream << (unsigned int)player.m_Health << "/20 " << player.m_Mana << std::endl;
+		stream << "Hand: " << player.m_Hand << std::endl;
+		stream << "Board: " << player.m_Board << std::endl;
+		return stream;
 	}
 
 }

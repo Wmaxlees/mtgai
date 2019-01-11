@@ -8,29 +8,31 @@
 #include "Card/CardBase.h"
 #include "Mana.h"
 
-namespace MTG {
-  namespace Card {
+namespace mtg {
+	namespace card {
 
-  	class Creature : public CardBase
-  	{
-  		public:
-  			Creature ();
-  			~Creature ();
+		class Creature : public CardBase
+		{
+		public:
+			Creature();
+			~Creature();
 
-  			bool isAffordable (const Mana& mana) const override;
+			bool isAffordable(const Mana& mana) const override;
 
-        void setManaTap (std::string manaString) override;
-  			void setPower (unsigned char power) override;
-  			void setToughness (unsigned char toughness) override;
+			void setManaTap(std::string manaString) override;
+			void setPower(unsigned char power) override;
+			void setToughness(unsigned char toughness) override;
 
-        std::array<unsigned char, CardBase::VECTOR_SIZE> vectorize () const override;
+			const Mana getManaTap() const override;
 
-  		protected:
-  			unsigned char m_Power;
-  			unsigned char m_Toughness;
-  	};
+			std::array<unsigned char, CardBase::VECTOR_SIZE> vectorize() const override;
 
-  }
+		protected:
+			unsigned char m_Power;
+			unsigned char m_Toughness;
+		};
+
+	}
 
 }
 

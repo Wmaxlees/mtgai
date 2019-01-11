@@ -8,13 +8,13 @@
 
 #include "EnvState.h"
 
-namespace MTG {
+namespace mtg {
 
   EnvState::EnvState(
-    std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> observation,
+    std::unique_ptr<Matrix<unsigned char, card::CardInstance::VECTOR_SIZE>> observation,
     int reward,
     bool done,
-    std::shared_ptr<Card::Instance> playCard
+    std::shared_ptr<card::CardInstance> playCard
   ) {
     this->m_Observation = move(observation);
     this->m_Reward = reward;

@@ -12,7 +12,7 @@
 #include <memory>
 
 #include "Matrix.h"
-#include "Card/Instance.h"
+#include "Card/CardInstance.h"
 
 template <class T, std::size_t W>
 Matrix<T, W>::Matrix () {
@@ -79,4 +79,4 @@ T& Matrix<T, W>::operator [] (std::size_t i) {
   return this->m_Data[i];
 }
 
-template class Matrix <unsigned char, MTG::Card::Instance::VECTOR_SIZE>;
+template class Matrix <unsigned char, mtg::card::CardInstance::VECTOR_SIZE>;

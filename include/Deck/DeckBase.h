@@ -5,14 +5,14 @@
 #include <memory>
 #include <deque>
 
-#include "Deck/Instance.h"
+#include "Deck/DeckInstance.h"
 
-namespace MTG {
-  namespace Deck {
+namespace mtg {
+  namespace deck {
   	class DeckBase {
   		public:
         virtual ~DeckBase() = 0;
-  			virtual std::unique_ptr<Instance> newInstance () const = 0;
+  			virtual std::unique_ptr<DeckInstance> newInstance () const = 0;
 
 
   	};

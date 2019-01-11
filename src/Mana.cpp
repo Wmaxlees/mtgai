@@ -1,10 +1,37 @@
 
 #include "Mana.h"
 
-namespace MTG {
+namespace mtg {
 
 	Mana::Mana () {
-    this->clear();
+		this->clear();
+	}
+
+	Mana::Mana(std::string manaString) {
+		std::string delimiter = ";";
+
+		size_t pos = 0;
+		std::string token;
+
+		int value = 0;
+
+		value = Mana::getNextValue(manaString);
+		this->m_Colorless = value;
+
+		value = Mana::getNextValue(manaString);
+		this->m_B = value;
+
+		value = Mana::getNextValue(manaString);
+		this->m_G = value;
+
+		value = Mana::getNextValue(manaString);
+		this->m_R = value;
+
+		value = Mana::getNextValue(manaString);
+		this->m_U = value;
+
+		value = Mana::getNextValue(manaString);
+		this->m_W = value;
 	}
 
 
@@ -59,6 +86,39 @@ namespace MTG {
 		}
 
 		return false;
+	}
+
+	void Mana::add(const Mana &mana) {
+		this->m_B += mana.m_B;
+		this->m_G += mana.m_G;
+		this->m_R += mana.m_R;
+		this->m_U += mana.m_U;
+		this->m_W += mana.m_W;
+		this->m_Colorless += mana.m_Colorless;
+	}
+
+	unsigned char Mana::getColorless() const {
+		return this->m_Colorless;
+	}
+
+	unsigned char Mana::getB() const {
+		return this->m_B;
+	}
+
+	unsigned char Mana::getG() const {
+		return this->m_G;
+	}
+
+	unsigned char Mana::getR() const {
+		return this->m_R;
+	}
+
+	unsigned char Mana::getU() const {
+		return this->m_U;
+	}
+
+	unsigned char Mana::getW() const {
+		return this->m_W;
 	}
 
 
@@ -122,6 +182,34 @@ namespace MTG {
 			this->m_W = 0;
 		}
 
+	}
+
+
+	int Mana::getNextValue(std::string& manaCostString) {
+		std::string delimiter = ";";
+
+		size_t pos = 0;
+		std::string token;
+
+		pos = manaCostString.find(delimiter);
+		token = manaCostString.substr(0, pos);
+		int value = std::stoi(token);
+
+		manaCostString.erase(0, pos + delimiter.length());
+
+		return value;
+	}
+
+	std::ostream& operator<< (std::ostream& stream, const Mana& mana) {
+
+		stream << "W: " << (unsigned int)mana.m_W <<
+			" | U: " << (unsigned int)mana.m_U <<
+			" | B: " << (unsigned int)mana.m_B <<
+			" | R: " << (unsigned int)mana.m_R <<
+			" | G: " << (unsigned int)mana.m_G <<
+			" | " << (unsigned int)mana.m_Colorless;
+
+		return stream;
 	}
 
 }

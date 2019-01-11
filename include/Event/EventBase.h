@@ -13,16 +13,18 @@
 
 #include <string>
 
-namespace Event {
+namespace mtg {
+	namespace event {
 
-  class EventBase {
-    public:
-      virtual std::string getType () const = 0;
+		class EventBase {
+			public:
+				virtual std::string getType() const = 0;
 
-    protected:
+			protected:
 
 
-  };
+		};
+	}
 }
 
 #endif //_H_EVENT_EVENTBASE

@@ -1,28 +1,27 @@
 #pragma once
+
 #include "Card/CardBase.h"
+#include "Mana.h"
 
-namespace MTG {
-  namespace Card {
-  	class Land : public CardBase {
-  		public:
-  			Land ();
-  			~Land ();
+namespace mtg {
+	namespace card {
+		class Land : public CardBase {
+		public:
+			Land();
+			~Land();
 
-  			bool isAffordable(const Mana& mana) const override;
+			bool isAffordable(const Mana& mana) const override;
 
-        void setManaTap (std::string manaString) override;
-  			void setPower(unsigned char power) override;
-  			void setToughness(unsigned char toughness) override;
+			void setManaTap(std::string manaString) override;
+			void setPower(unsigned char power) override;
+			void setToughness(unsigned char toughness) override;
 
-        std::array<unsigned char, CardBase::VECTOR_SIZE> vectorize () const override;
+			const Mana getManaTap() const override;
 
-  		protected:
-  			unsigned char m_LandColorless;
-  			unsigned char m_LandB;
-  			unsigned char m_LandG;
-  			unsigned char m_LandR;
-  			unsigned char m_LandU;
-  			unsigned char m_LandW;
-  	};
-  }
+			std::array<unsigned char, CardBase::VECTOR_SIZE> vectorize() const override;
+
+		protected:
+			mtg::Mana m_Mana;
+		};
+	}
 }

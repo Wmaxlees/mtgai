@@ -3,7 +3,7 @@
 #include "ManaCost.h"
 
 
-namespace MTG {
+namespace mtg {
 
 	int getNextValue (std::string& manaCostString);
 

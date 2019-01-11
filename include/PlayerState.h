@@ -3,57 +3,63 @@
 #define _H_PLAYER
 
 #include <memory>
+#include <iostream>
 #include <vector>
 
+#include "Action/ActionBase.h"
 #include "Board.h"
-#include "Card/Instance.h"
+#include "Card/CardInstance.h"
 #include "Deck/DeckBase.h"
-#include "Event/ENewPhase.h"
+#include "Event/NewPhaseEvent.h"
 #include "Event/EventBase.h"
-#include "Event/Handler.h"
+#include "Event/EventHandler.h"
 #include "Hand.h"
 #include "Mana.h"
 #include "ManaCost.h"
 #include "Matrix.h"
 
 
-namespace MTG {
-	class PlayerState : public Event::Handler {
+namespace mtg {
+	class PlayerState : public event::EventHandler {
 	public:
-		PlayerState (unsigned char startingHealth, std::unique_ptr<Deck::Instance> deck, unsigned char uniqueID);
-		~PlayerState ();
+		PlayerState(unsigned char startingHealth, std::unique_ptr<deck::DeckInstance> deck, unsigned char uniqueID);
+		~PlayerState();
 
-		std::vector<std::shared_ptr<const Card::Instance>> getInstantSpeedMoves () const;
-		std::vector<std::shared_ptr<const Card::Instance>> getMainPhaseMoves () const;
-		std::vector<std::shared_ptr<const Card::Instance>> getPossibleAttackers () const;
-		std::vector<std::shared_ptr<const Card::Instance>> getPossibleBlockers () const;
+		const std::vector<std::shared_ptr<action::ActionBase>> getInstantSpeedMoves() const;
+		const std::vector<std::shared_ptr<action::ActionBase>> getMainPhaseMoves() const;
+		const std::vector<std::shared_ptr<action::ActionBase>> getPossibleBlockers() const;
+		const std::vector<std::shared_ptr<action::ActionBase>> getDeclareAttackerMoves(unsigned char targetIdx) const;
 
-		void playCard (std::shared_ptr<const Card::Instance> card);
+		bool isDead();
 
-    bool isDead ();
+		void handle(std::unique_ptr<event::EventBase>& event) override;
 
-    void handle (std::unique_ptr<Event::EventBase>& event) override;
+		std::unique_ptr<Matrix<unsigned char, card::CardInstance::VECTOR_SIZE>> vectorize(bool hideHand, unsigned char playerIdx) const;
 
-    std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> vectorize (bool hideHand, std::size_t playerIdx) const;
+		friend std::ostream& operator<< (std::ostream& stream, const PlayerState& player);
 
 	protected:
-    unsigned char m_UniqueID;
+		unsigned char m_UniqueID;
 		unsigned char m_Health;
-    std::unique_ptr<Deck::Instance> m_Deck;
+		std::unique_ptr<deck::DeckInstance> m_Deck;
 		Hand m_Hand;
 		Board m_Board;
 		Mana m_Mana;
 
-    void handleGameStart ();
-    void handleNewPhase (Event::ENewPhase& newPhase);
+		void handleGameStart();
+		void handleNewPhase(event::NewPhaseEvent& newPhase);
 
-		bool drawCards (unsigned char amount);
+		bool drawCards(unsigned char amount);
+		void playCard(std::shared_ptr<const card::CardInstance> card);
+		void tapLand(std::shared_ptr<card::CardInstance> card);
 
 	private:
 
 
 
 	};
+
+	std::ostream& operator<< (std::ostream& stream, const PlayerState& player);
 }
 
 

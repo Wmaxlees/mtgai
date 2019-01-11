@@ -2,23 +2,23 @@
 
 #include "Deck/StandardDeck.h"
 
-namespace MTG {
-  namespace Deck {
+namespace mtg {
+  namespace deck {
 
   	StandardDeck::StandardDeck () {
-  		this->m_Cards = std::array<std::shared_ptr<Card::CardBase>, 60>();
+  		this->m_Cards = std::array<std::shared_ptr<card::CardBase>, 60>();
   	}
 
 
   	StandardDeck::~StandardDeck () {
   	}
 
-    std::unique_ptr<Instance> StandardDeck::newInstance () const {
-      std::deque<std::shared_ptr<Card::CardBase>> cards;
+    std::unique_ptr<DeckInstance> StandardDeck::newInstance () const {
+      std::deque<std::shared_ptr<card::CardBase>> cards;
 
       std::copy(this->m_Cards.begin(), this->m_Cards.end(), cards.begin());
 
-      std::unique_ptr<Instance> result = std::make_unique<Instance>(cards);
+      std::unique_ptr<DeckInstance> result = std::make_unique<DeckInstance>(cards);
       return move(result);
     }
 

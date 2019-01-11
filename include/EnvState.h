@@ -13,18 +13,18 @@
 
 #include <memory>
 
-#include "Card/Instance.h"
+#include "Card/CardInstance.h"
 #include "Matrix.h"
 
-namespace MTG {
+namespace mtg {
 
   class EnvState {
     public:
       EnvState(
-        std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> observation,
+        std::unique_ptr<Matrix<unsigned char, card::CardInstance::VECTOR_SIZE>> observation,
         int reward,
         bool done,
-        std::shared_ptr<Card::Instance> playCard
+        std::shared_ptr<card::CardInstance> playCard
       );
 
       ~EnvState();
@@ -32,10 +32,10 @@ namespace MTG {
       bool isGameOver ();
 
     protected:
-      std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> m_Observation;
+      std::unique_ptr<Matrix<unsigned char, card::CardInstance::VECTOR_SIZE>> m_Observation;
       int m_Reward;
       bool m_Done;
-      std::shared_ptr<Card::Instance> m_PlayCard;
+      std::shared_ptr<card::CardInstance> m_PlayCard;
   };
 
 }

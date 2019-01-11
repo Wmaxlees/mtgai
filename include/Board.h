@@ -5,27 +5,38 @@
 
 #include <vector>
 
-#include "Card/Instance.h"
+#include "Action/ActionBase.h"
+#include "Card/CardInstance.h"
 #include "Matrix.h"
 
-namespace MTG {
+namespace mtg {
 	class Board {
-		public:
-			Board ();
-			~Board ();
+	public:
+		Board();
+		~Board();
 
-			void addCard (std::shared_ptr<Card::Instance> card);
-      void untapAll ();
+		void addCard(std::shared_ptr<card::CardInstance> card);
+		void untapAll();
 
-			std::vector<std::shared_ptr<const Card::Instance>> getCardsOfType(unsigned int type) const;
-			std::vector<std::shared_ptr<const Card::Instance>> getCardsOfType(unsigned int type, bool onlyUntapped) const;
+		std::vector<std::shared_ptr<const card::CardInstance>> getCardsOfType(unsigned int type) const;
+		std::vector<std::shared_ptr<const card::CardInstance>> getCardsOfType(unsigned int type, bool onlyUntapped) const;
 
-      std::unique_ptr<Matrix<unsigned char, Card::Instance::VECTOR_SIZE>> vectorize (std::size_t playerIdx) const;
+		void removeAllSummoningSickness();
 
-		protected:
-			std::vector<std::shared_ptr<Card::Instance>> m_Cards;
+		std::unique_ptr<Matrix<unsigned char, card::CardInstance::VECTOR_SIZE>> vectorize(unsigned char playerIdx) const;
+
+		const std::vector<std::shared_ptr<action::ActionBase>> getPlayableAbilities(unsigned char playerIdx, const Mana mana) const;
+		const std::vector<std::shared_ptr<action::ActionBase>> getTappableLands(unsigned char playerIdx) const;
+		const std::vector<std::shared_ptr<action::ActionBase>> getDeclareAttackerMoves(unsigned char playerIdx, unsigned char targetIdx) const;
+
+		friend std::ostream& operator<< (std::ostream& stream, const Board& board);
+
+	protected:
+		std::vector<std::shared_ptr<card::CardInstance>> m_Cards;
 	};
 
+
+	std::ostream& operator<< (std::ostream& stream, const Board& board);
 }
 
 #endif //_H_BOARD
