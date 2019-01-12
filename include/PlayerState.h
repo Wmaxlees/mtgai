@@ -34,6 +34,8 @@ namespace mtg {
 
 		void handle(std::unique_ptr<event::EventBase>& event) override;
 
+		const std::vector<std::shared_ptr<action::ActionBase>> getAttackers() const;
+
 		std::unique_ptr<Matrix<unsigned char, card::CardInstance::VECTOR_SIZE>> vectorize(bool hideHand, unsigned char playerIdx) const;
 
 		friend std::ostream& operator<< (std::ostream& stream, const PlayerState& player);
@@ -45,6 +47,7 @@ namespace mtg {
 		Hand m_Hand;
 		Board m_Board;
 		Mana m_Mana;
+		std::vector<std::shared_ptr<action::ActionBase>> m_CurrentAttackers;
 
 		void handleGameStart();
 		void handleNewPhase(event::NewPhaseEvent& newPhase);

@@ -1,6 +1,10 @@
 #include <iostream>
 
 #include "Game.h"
+
+#include "Action/DeclareAttackerAction.h"
+
+#include "Event/DeclareAttackerEvent.h"
 #include "Event/GameStartEvent.h"
 #include "Event/NewPhaseEvent.h"
 #include "Event/PassEvent.h"
@@ -185,11 +189,14 @@ namespace mtg {
 			this->m_EventManager.trigger(std::make_unique<event::PlayCardEvent>(action->getPlayerIdx(), action->getCard()));
 		}
 
-		
+		if (action->getType() == "DeclareAttackerAction") {
+			std::cout << "Player " << (unsigned int)this->m_CurrentPlayer << " declaring attacker " << action->getCard()->getName() << std::endl;
+			action::DeclareAttackerAction* daAction = (action::DeclareAttackerAction*)&(*action);
+			this->m_EventManager.trigger(std::make_unique<event::PlayCardEvent>(daAction->getPlayerIdx(), daAction->getTargetIdx(), daAction->getCard()));
+		}
 	}
 
 	void Game::pass() {
-		// std::cout << "Player " << (unsigned int)this->m_CurrentPlayer << " passing" << std::endl;
 		this->m_EventManager.trigger(std::make_unique<event::PassEvent>());
 	}
 

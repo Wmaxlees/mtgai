@@ -1,3 +1,4 @@
+#include "Event/DeclareAttackerEvent.h"
 #include "Event/NewPhaseEvent.h"
 #include "Event/PlayCardEvent.h"
 #include "Event/StartDrawStepEvent.h"
@@ -106,6 +107,13 @@ namespace mtg {
 			this->m_Mana.add(castEvent->getCard()->getMana());
 			castEvent->getCard()->tap();
 		}
+
+
+		if (event->getType() == "DeclareAttacker") {
+			event::DeclareAttackerEvent* castEvent = (event::DeclareAttackerEvent*)&(*event);
+			// Make an actual object for keeping track of attack moves that are already declared
+			// this->m_CurrentAttackers.push_back(std::make_shared<action::)
+		}
 	}
 
 
@@ -160,6 +168,11 @@ namespace mtg {
 		}
 
 		return true;
+	}
+
+
+	const std::vector<std::shared_ptr<action::ActionBase>> PlayerState::getAttackers() const {
+		return this->m_CurrentAttackers;
 	}
 
 

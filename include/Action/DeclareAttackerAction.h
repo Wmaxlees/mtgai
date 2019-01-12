@@ -12,6 +12,8 @@ namespace mtg {
 		public:
 			explicit DeclareAttackerAction(unsigned char playerIdx, unsigned char targetIdx, std::shared_ptr<card::CardInstance> card);
 
+			unsigned char getTargetIdx() const;
+
 			std::string getType() const override;
 
 		protected:

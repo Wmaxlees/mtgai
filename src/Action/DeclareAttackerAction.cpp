@@ -8,6 +8,10 @@ namespace mtg {
 			this->m_TargetIdx = targetIdx;
 		}
 
+		unsigned char DeclareAttackerAction::getTargetIdx() const {
+			return this->m_TargetIdx;
+		}
+
 		std::string DeclareAttackerAction::getType() const {
 			return "DeclareAttackerAction";
 		}
